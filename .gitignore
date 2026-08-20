@@ -1,0 +1,72 @@
+# ========================
+# Node.js
+# ========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm
+.yarn-integrity
+.pnp.*
+.pnp.js
+
+# ========================
+# Environment Variables
+# ========================
+.env
+.env.*
+!.env.example
+
+# ========================
+# Logs
+# ========================
+logs/
+*.log
+*.log.*
+
+# ========================
+# Build Output
+# ========================
+dist/
+build/
+out/
+
+# ========================
+# Docker
+# ========================
+# Local volume data (mounted DB/storage directories)
+pgdata/
+mongodata/
+rabbitmq_data/
+pgadmin_data/
+
+# ========================
+# OS & Editor
+# ========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ========================
+# Testing & Coverage
+# ========================
+coverage/
+.nyc_output/
+*.lcov
+
+# ========================
+# Miscellaneous
+# ========================
+*.pid
+*.seed
+*.pid.lock
+.cache/
+tmp/
+temp/

@@ -18,12 +18,14 @@ class MongoConnection{
                 return this.connection
             }
 
-            this.connection = await mongoose.connect(config.mongodb.uri, {
+            await mongoose.connect(config.mongodb.uri, {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
                 connectTimeoutMS: 10000,
                 dbName: config.mongodb.db_name
             })
+
+            this.connection = mongoose.connection
             
             logger.info('MongoDB connected')
 

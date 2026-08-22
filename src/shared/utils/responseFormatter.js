@@ -25,7 +25,7 @@ class ResponseFormatter{
             success: false,
             error: errors,
             message: 'Validation Error',
-            statusCode: 422,
+            statusCode: 400,
             timestamp: Date.now(),
         }
     }

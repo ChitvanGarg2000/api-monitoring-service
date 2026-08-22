@@ -1,5 +1,5 @@
 import winston from 'winston';
-import config from './index';
+import config from './index.js';
 
 const logger = winston.createLogger({
     level: config.node_env === 'production' ? 'info' : 'debug',
@@ -16,8 +16,8 @@ const logger = winston.createLogger({
     ],
 });
 
-if(config.node_env){
-    logger.add(new winston.transport.Console({
+if (config.node_env) {
+    logger.add(new winston.transports.Console({
         format: winston.format.combine(
             winston.format.colorize(),
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -28,3 +28,4 @@ if(config.node_env){
     }))
 }
 
+export default logger

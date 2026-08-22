@@ -1,15 +1,15 @@
 import pg from 'pg'
-import config from './index'
-import logger from './logger'
+import config from './index.js'
+import logger from './logger.js'
 
-class PostgresConnection{
-    constructor(){
+class PostgresConnection {
+    constructor() {
         this.pool = null
     }
 
-    async getPool(){
-        try{
-            if(this.pool){
+    async getPool() {
+        try {
+            if (this.pool) {
                 logger.info('PostgreSQL already connected')
                 return this.pool
             }
@@ -37,28 +37,28 @@ class PostgresConnection{
             })
 
             return this.pool
-        }catch(error){
+        } catch (error) {
             logger.error('PostgreSQL connection error: ', error)
             process.exit(1)
         }
     }
 
-    async disconnect(){
-        try{
-            if(this.pool){
+    async disconnect() {
+        try {
+            if (this.pool) {
                 await this.pool.end()
                 this.pool = null
                 logger.info('PostgreSQL disconnected')
             }
-        }catch(error){
+        } catch (error) {
             logger.error('PostgreSQL disconnection error: ', error)
             process.exit(1)
         }
     }
 
 
-    async testConnection(){
-        try{
+    async testConnection() {
+        try {
             const pool = await this.getPool()
             const client = await pool.connect()
             await client.query('SELECT NOW()')
@@ -66,28 +66,28 @@ class PostgresConnection{
 
             logger.info('PostgreSQL connection test successful')
             return true
-        }catch(error){
+        } catch (error) {
             logger.error('PostgreSQL connection test failed: ', error)
             return false
         }
     }
 
-    async query(query, params){
+    async query(query, params) {
         const startTime = Date.now()
-        try{
+        try {
             const pool = await this.getPool()
             const result = await pool.query(query, params)
             const duration = Date.now() - startTime
             logger.info(`PostgreSQL query executed in ${duration}ms`)
             return result
-        }catch(error){
+        } catch (error) {
             logger.error('PostgreSQL query error: ', error)
             throw error
         }
     }
 
-    async closePool(){
-        if(this.pool){
+    async closePool() {
+        if (this.pool) {
             await this.pool.end()
             this.pool = null
             logger.info('PostgreSQL pool closed')

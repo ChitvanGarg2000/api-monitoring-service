@@ -1,5 +1,5 @@
-import config from "./index";
-import logger from "./logger";
+import config from "./index.js";
+import logger from "./logger.js";
 import amqp from "amqplib"
 
 class RabbitMQConnection {

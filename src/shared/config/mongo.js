@@ -1,9 +1,9 @@
 import mongoose from 'mongoose'
-import config from './index'
-import logger from './logger'
+import config from './index.js'
+import logger from './logger.js'
 
-class MongoConnection{
-    constructor(){
+class MongoConnection {
+    constructor() {
         this.connection = null
     }
 
@@ -11,22 +11,20 @@ class MongoConnection{
      * connect mongo db 
      * @return {Promise<mongoose.Connection>}
     */
-    async connect(){
-        try{
-            if(this.connection){
+    async connect() {
+        try {
+            if (this.connection) {
                 logger.info('MongoDB already connected')
                 return this.connection
             }
 
             await mongoose.connect(config.mongodb.uri, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
                 connectTimeoutMS: 10000,
                 dbName: config.mongodb.db_name
             })
 
             this.connection = mongoose.connection
-            
+
             logger.info('MongoDB connected')
 
             this.connection.on('error', (err) => {
@@ -40,30 +38,30 @@ class MongoConnection{
             })
 
             return this.connection
-        }catch(error){
+        } catch (error) {
             logger.error('MongoDB connection error: ', error)
             process.exit(1)
         }
     }
 
-    async disconnect(){
-        try{
-            if(this.connection){
+    async disconnect() {
+        try {
+            if (this.connection) {
                 await this.connection.disconnect()
                 this.connection = null
                 logger.info('MongoDB disconnected')
             }
-        }catch(error){
+        } catch (error) {
             logger.error('MongoDB disconnection error: ', error)
             process.exit(1)
         }
     }
 
-    async isConnected(){
+    async isConnected() {
         return this.connection && this.connection.readyState === 1
     }
 
-    async getDb(){
+    async getDb() {
         return this.connection ? this.connection.db : null
     }
 }

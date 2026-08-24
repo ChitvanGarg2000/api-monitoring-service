@@ -10,6 +10,6 @@ COPY . .
 
 RUN mkdir -p shared/logs
 
-EXPOSE 5000
+EXPOSE 8000
 
 CMD ["node", "./src/server.js"]

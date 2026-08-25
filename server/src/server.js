@@ -6,12 +6,14 @@ import logger from "./shared/config/logger.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import ResponseFormatter from "./shared/utils/responseFormatter.js";
 import { initializeConnections, closeConnections } from "./db/init.js";
+import cookieParser from "cookie-parser";
 import config from "./shared/config/index.js";
+import authRouter from "./services/auth/routes/authRouter.js";
 
 dotenv.config();
 const app = express();
 
-
+app.use(cookieParser())
 app.use(cors({
     origin: ['*'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -42,7 +44,10 @@ app.use('/health', (req, res) => {
     ))
 })
 
-app.use('/', (req, res) => {
+
+// Routes
+app.use('/api/auth', authRouter)
+app.get('/', (req, res) => {
     return res.status(200).json(
         ResponseFormatter.success(
             {

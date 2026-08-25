@@ -20,7 +20,7 @@ const config = {
     },
 
     rabbitmq: {
-        uri: process.env.RABBITMQ_URI || 'amqp://localhost:5672',
+        uri: process.env.RABBITMQ_URI || 'amqp://localhost:15672',
         queue: process.env.RABBITMQ_QUEUE || 'api_monitoring_queue',
         publisherConfirm: process.env.RABBITMQ_PUBLISHER_CONFIRM === 'true' || false,
         retryAttempts: parseInt(process.env.RABBITMQ_RETRY_ATTEMPTS || '5', 10),
@@ -38,6 +38,12 @@ const config = {
         standardHeaders: true,
         legacyHeaders: false,
     },
+
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000
+    }
 }
 
 export default config

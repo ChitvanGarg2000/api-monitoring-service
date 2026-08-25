@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import SecurityUtils from "../utils/SecurityUtils";
-import bcrypt from "bcrypt";
+import SecurityUtils from "../utils/SecurityUtils.js";
+import bcrypt from "bcryptjs";
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -95,18 +95,11 @@ const UserSchema = new mongoose.Schema({
     },
 }, { timestamps: true, collection: 'users' })
 
-UserSchema.pre('save', async function(next) {
-    if(!this.isModified('password')){
-        next()
-    }
+UserSchema.pre('save', async function() {
+    if(!this.isModified('password')) return;
 
-    try {
-        const salt = await bcrypt.genSalt(10)
-        this.password = await bcrypt.hash(this.password, salt)
-        next();
-    } catch (error) {
-        next(error)
-    } 
+    const salt = await bcrypt.genSalt(10)
+    this.password = await bcrypt.hash(this.password, salt)
 })
 
 UserSchema.methods.comparePassword = async function(candidatePassword) {

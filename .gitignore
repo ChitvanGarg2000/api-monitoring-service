@@ -70,3 +70,6 @@ coverage/
 .cache/
 tmp/
 temp/
+
+# api testing
+api-monitoring-auth-service

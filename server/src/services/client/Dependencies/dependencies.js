@@ -8,7 +8,7 @@ class Container {
   static init() {
 
       const repositories= {
-        clientRepository: new MongoApiKeyRepository(),
+        clientRepository: new MongoClientRepository(),
         apikeyRepository: new MongoApiKeyRepository(),
         userRepository: new MongoUserRepository()
       }
@@ -26,7 +26,7 @@ class Container {
 
 const clientContainer = Container.init()
 
-export const { Container }
+export { Container }
 export default clientContainer
 
 

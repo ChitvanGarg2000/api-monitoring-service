@@ -141,7 +141,7 @@ export default class AuthService {
 
       if (!user) throw new AppError("User not found with userId", 404);
 
-      return user.role === APPLICATION_ROLES;
+      return user.role === APPLICATION_ROLES.SUPER_ADMIN;
     } catch (error) {
       logger.error(`Failed to fetch user permission: ${error.message}`);
       throw error;

@@ -16,7 +16,11 @@ const app = express();
 
 app.use(cookieParser())
 app.use(cors({
-    origin: ['*'],
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, Postman, etc.)
+        // and reflect any origin back — suitable for development
+        callback(null, origin || '*');
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

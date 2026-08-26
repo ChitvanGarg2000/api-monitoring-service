@@ -1,4 +1,4 @@
-import BaseRepository from "./BaseRepository.js";
+import BaseRepository from "./baseRepository.js";
 import userModel from "../../../shared/models/User.js";
 import logger from "../../../shared/config/logger.js";
 

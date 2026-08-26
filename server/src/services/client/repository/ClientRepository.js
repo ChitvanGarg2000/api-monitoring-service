@@ -1,6 +1,6 @@
 import BaseClientRepository from "./BaseClientRepository.js";
 import ClientModel from "../../../shared/models/Client.js";
-import logger from "../../../shared/utils/logger.js";
+import logger from "../../../shared/config/logger.js";
 class MongoClientRepository extends BaseClientRepository {
   constructor() {
     super(ClientModel);

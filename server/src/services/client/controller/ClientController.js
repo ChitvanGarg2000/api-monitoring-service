@@ -19,13 +19,16 @@ export default class ClientController{
      */
     createClient = async (req, res, next) => {
         try {
+            console.log(req.user, "<<<< user >>>")
             const isSuperAdmin = await this.authService.checkSuperAdminPermissions(req.user.userId)
             if(!isSuperAdmin) return res.status(403).json(ResponseFormatter.error('Only super admin can create client', 403))
             
             const { body, user } = req
-            const client = this.clientService.createClient(body, user)
+            const client = await this.clientService.createClient(body, user)
 
             logger.info('create client controller working fine')
+
+            console.log('client', client, '<<<< client >>>>')
             return res.status(201).json(ResponseFormatter.success(client, 'client created successfully', 201))
         } catch (error) {
             logger.error(`error creating client ${error.message}`)
@@ -68,7 +71,7 @@ export default class ClientController{
         try {
             const { clientId } = req.params
 
-            const apiKey = this.clientService.createApiKey(clientId, req.body, req.user)
+            const apiKey = await this.clientService.createApiKey(clientId, req.body, req.user)
 
             return res.status(201).json(ResponseFormatter.success(apiKey, 'api key created successfully'))
         } catch (error) {
@@ -90,7 +93,7 @@ export default class ClientController{
 
             if(!clientId) res.status(400).json(ResponseFormatter.error('cliendId required', 400))
 
-            const apiKeys = this.clientService.getApiKeys(clientId)
+            const apiKeys = await this.clientService.getApiKeys(clientId)
 
             return res.status(200).json(ResponseFormatter.success(apiKeys, "API keys successfully fetched"))
         } catch (error) {

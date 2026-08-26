@@ -84,15 +84,16 @@ export default class ClientService {
 
       const slug = this.generateSlug(name);
 
-      const isExistiengClient = this.clientRepository.findBySlug(slug);
+      const isExistingClient = await this.clientRepository.findBySlug(slug);
 
-      if (isExistiengClient) {
+      if (isExistingClient) {
         throw new AppError(`client with slug ${slug} already exist`, 409);
       }
 
       const client = await this.clientRepository.create({
         name,
         slug,
+        email,
         description,
         website,
         createdBy: adminUser?.userId,
@@ -118,7 +119,7 @@ export default class ClientService {
 
   createClientUser = async (clientId, userData, adminUser) => {
     try {
-      const client = this.clientRepository.findById(clientId);
+      const client = await this.clientRepository.findById(clientId);
 
       if (!client) throw new AppError("client not found", 404);
 
@@ -129,6 +130,7 @@ export default class ClientService {
       const {
         username,
         password,
+        email,
         role = APPLICATION_ROLES.CLIENT_VIEWER,
       } = userData;
 
@@ -163,7 +165,7 @@ export default class ClientService {
 
       logger.info("Client user created", {
         client: client.clientId,
-        user: user.user._id,
+        user: user._id,
         role,
       });
       return this.formatClientForResponse(user);
@@ -197,13 +199,14 @@ export default class ClientService {
 
       const { keyId, keyValue } = await this.generateApiKey();
 
-      const apiKey = this.apiKeyRepository.create({
+      const apiKey = await this.apiKeyRepository.create({
         keyId,
         keyValue: `am-${keyValue}`,
         name,
         description,
         environment,
-        createdBy: adminUser.userId,
+        clientId,
+        createdBy: user.userId,
       });
 
       logger.info("Api key created successfully in service", apiKey);
@@ -217,7 +220,7 @@ export default class ClientService {
 
   getApiKeys = async (clientId) => {
     try {
-      const apiKeys = this.apiKeyRepository.findByClientId(clientId);
+      const apiKeys = await this.apiKeyRepository.findByClientId(clientId);
 
       if (!apiKeys || apiKeys.length === 0) {
         throw new AppError("client does not have any api keys", 404);

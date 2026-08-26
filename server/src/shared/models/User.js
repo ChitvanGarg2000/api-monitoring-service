@@ -51,8 +51,8 @@ const UserSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['super_admin', 'client_admin', 'client_user'],
-        default: 'client_user',
+        enum: ['super_admin', 'client_admin', 'client_viewer'],
+        default: 'client_viewer',
     },
 
     clientId: {

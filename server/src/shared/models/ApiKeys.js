@@ -16,13 +16,11 @@ const apiKeySchema = new mongoose.Schema(
             type: String,
             required: true,
             unique: true,
-            index: true,
         },
         clientId: {
             type: mongoose.Schema.Types.ObjectId, // 123
             ref: 'Client',
             required: true,
-            index: true,
         },
         name: {
             type: String,
@@ -94,7 +92,6 @@ const apiKeySchema = new mongoose.Schema(
                 const days = parseInt(process.env.API_KEY_EXPIRY_DAYS || '365');
                 return new Date(Date.now() + days * 24 * 60 * 60 * 1000);
             },
-            index: true,
         },
         metadata: {
             createdBy: {

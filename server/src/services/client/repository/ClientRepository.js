@@ -1,0 +1,3 @@
+class MongoClientRepository extends BaseClientRepository{
+    
+}

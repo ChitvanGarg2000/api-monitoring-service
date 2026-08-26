@@ -1,11 +1,7 @@
-const ROLES = [
-    "super_admin",
-    "client_admin",
-    "client_viewer"
-];
 export const APPLICATION_ROLES = {
   SUPER_ADMIN: "super_admin",
   CLIENT_VIEWER: "client_viewer",
+  CLIENT_ADMIN: 'client_admin'
 };
 
 export const CLIENT_ROLES = [
@@ -19,6 +15,6 @@ export const isValidClientRole = (role) => {
 
 
 export const isValidRole = (role) => {
-    return Object.values(ROLES).includes(role)
+    return Object.values(APPLICATION_ROLES).includes(role)
 }
    

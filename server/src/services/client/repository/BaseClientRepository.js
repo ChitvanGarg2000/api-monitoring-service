@@ -15,21 +15,18 @@ class BaseClientRepository {
     throw new Error('Method not implemented')
   }
 
-  async findByUsername(username) {
+  async findBySlug(slug) {
     throw new Error('Method not implemented')
   }
 
-  async findAll() {
+  async findAll(filter = {}, options = {}) {
     throw new Error('Method not implemented')
   }
 
-  async update(clientId, updateClientData) {
+  async count(filter = {}) {
     throw new Error('Method not implemented')
   }
-
-  async delete(clientId) {
-    throw new Error('Method not implemented')
-  }
+ 
 }
 
 export default BaseClientRepository

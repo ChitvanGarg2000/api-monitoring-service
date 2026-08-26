@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import config from "../../../shared/config/index.js";
 import logger from "../../../shared/config/logger.js";
 import bcrypt from "bcryptjs";
+import { APPLICATION_ROLES } from "../../../shared/constants/role.js";
 
 export default class AuthService {
   constructor(userRepository) {
@@ -35,7 +36,7 @@ export default class AuthService {
 
   comparePassword = async (password, hash) => {
     return await bcrypt.compare(password, hash);
-  }
+  };
 
   onboardSuperAdmin = async (superAdminData) => {
     try {
@@ -97,14 +98,14 @@ export default class AuthService {
         throw new AppError("Username not found", 404);
       }
 
-      if(!user.isActive){
-        throw new AppError('User is not active', 403)
+      if (!user.isActive) {
+        throw new AppError("User is not active", 403);
       }
 
       const isMatched = await this.comparePassword(password, user.password);
 
-      if(!isMatched){
-        throw new AppError('Invalid Credentials', 401)
+      if (!isMatched) {
+        throw new AppError("Invalid Credentials", 401);
       }
 
       const token = this.generateToken(user);
@@ -121,16 +122,29 @@ export default class AuthService {
 
   getProfile = async (userId) => {
     try {
-      const user = await this.userRepository.findById(userId)
-      if(!user){
-        throw new AppError('User not found', 404)
+      const user = await this.userRepository.findById(userId);
+      if (!user) {
+        throw new AppError("User not found", 404);
       }
 
       logger.info(`User profile fetched successfully: ${user.username}`);
-      return this.formatUserForResponse(user)
+      return this.formatUserForResponse(user);
     } catch (error) {
       logger.error(`Failed to fetch user profile: ${error.message}`);
       throw error;
     }
-  }
+  };
+
+  checkSuperAdminPermissions = async (userId) => {
+    try {
+      const user = await this.userRepository.findById(userId);
+
+      if (!user) throw new AppError("User not found with userId", 404);
+
+      return user.role === APPLICATION_ROLES;
+    } catch (error) {
+      logger.error(`Failed to fetch user permission: ${error.message}`);
+      throw error;
+    }
+  };
 }

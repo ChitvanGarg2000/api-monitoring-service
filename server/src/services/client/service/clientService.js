@@ -238,4 +238,19 @@ export default class ClientService {
       throw error;
     }
   };
+
+  getClientsByApiKey = async (apiKey) => {
+    try {
+        const apiKey = this.apiKeyRepository.findByKeyValue(apiKey)
+        if(!apiKey || apiKey.isExpired()) return null
+        const client = apiKey.clientId
+        return {
+          client,
+          key: apiKey
+        }
+    } catch (error) {
+      logger.error("Error getting client by api key", error.message);
+      throw error;
+    }
+  }
 }

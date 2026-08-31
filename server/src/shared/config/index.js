@@ -25,6 +25,11 @@ const config = {
         publisherConfirm: process.env.RABBITMQ_PUBLISHER_CONFIRM === 'true' || false,
         retryAttempts: parseInt(process.env.RABBITMQ_RETRY_ATTEMPTS || '5', 10),
         retryDelay: parseInt(process.env.RABBITMQ_RETRY_DELAY || '1000', 10),
+        circuitBreaker: {
+            failureThreshold: parseInt(process.env.RABBITMQ_CIRCUIT_BREAKER_FAILURE_THRESHOLD || '5', 10),
+            cooldownMs: parseInt(process.env.RABBITMQ_CIRCUIT_BREAKER_COOLDOWN_MS || '3000', 10),
+            halfOpenMaxAttempts: parseInt(process.env.RABBITMQ_CIRCUIT_BREAKER_HALF_OPEN_MAX_ATTEMPTS || '3', 10),
+        }
     },
 
     jwt: {

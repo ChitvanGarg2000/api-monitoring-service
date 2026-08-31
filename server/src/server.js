@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import config from "./shared/config/index.js";
 import authRouter from "./services/auth/routes/authRouter.js";
 import clientRouter from "./services/client/routes/clientRoutes.js";
+import ingestRouter from "./services/ingest/routes/ingestRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -53,6 +54,8 @@ app.use('/health', (req, res) => {
 // Routes
 app.use('/api/auth', authRouter)
 app.use('/api/admin/client', clientRouter)
+app.use('/api/hit', ingestRouter)
+
 app.get('/', (req, res) => {
     return res.status(200).json(
         ResponseFormatter.success(

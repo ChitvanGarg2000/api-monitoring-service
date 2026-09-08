@@ -198,6 +198,51 @@ export class MetricsRepository extends BaseRepository{
             throw error
         }
     }
+
+    getOverallStats = async (clientId, startTime = null, endTime = null) => {
+        try {
+            const params = []
+            let paramIndex = 1
+
+            let query = `SELECT
+                SUM(total_hits) as total_hits,
+                SUM(avg_latency * total_hits)/ NULLIF(SUM(total_hits), 0) as avg_latency_ms,
+                SUM(error_hits) as error_hits,
+            FROM endpoint_metrics
+            `
+
+            if(clientId !== null){
+                query += `WHERE client_id = $${paramIndex++}`
+                params.push(clientId)
+            }
+
+            if(startTime !== null){
+                query += `AND time_bucket >= $${paramIndex++}`
+                params.push(startTime)
+            }
+
+            if(endTime !== null){
+                query += `AND time_bucket <= $${paramIndex++}`
+                params.push(endTime)
+            }
+
+            query += `
+                GROUP BY client_id
+                ORDER BY time_bucket DESC
+                LIMIT $${paramIndex}
+            `
+
+            params.push(safe_limit)
+
+            const {rows} = await this._query(query, params)
+
+            this.logger.info(`MetricsRepository: Fetched overall stats`)
+            return rows
+        } catch (error) {
+            this.logger.error(`MetricsRepository: getOverallStats failed - ${error.message}`)
+            throw error
+        }
+    }
     
     _query = (sql, params = [], client = this.postgres) => {
         const target = client || this.postgres
@@ -209,4 +254,6 @@ export class MetricsRepository extends BaseRepository{
 
         return target.query({ text: sql, values: params, statement_timeout: QUERY_TIMEOUT_MS })
     }
+
+    
 }

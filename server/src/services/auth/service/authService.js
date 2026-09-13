@@ -20,13 +20,13 @@ export default class AuthService {
   }
 
   generateToken(user) {
-    const { _id, email, username, role, client_id } = user;
+    const userObj = user.toObject ? user.toObject() : user;
     const payload = {
-      userId: _id,
-      email,
-      username,
-      role,
-      clientId: client_id || null,
+      userId: userObj._id,
+      email: userObj.email,
+      username: userObj.username,
+      role: userObj.role,
+      clientId: userObj.clientId || null,
     };
     const token = jwt.sign(payload, config.jwt.secret, {
       expiresIn: config.jwt.expiresIn,
@@ -40,13 +40,17 @@ export default class AuthService {
 
   onboardSuperAdmin = async (superAdminData) => {
     try {
+      logger.info("onboardSuperAdmin: step 1 findAll");
       const users = await this.userRepository.findAll();
+      logger.info(`onboardSuperAdmin: step 2 found ${users?.length ?? 0} users`);
       if (users?.length > 0) {
         throw new AppError("Super admin onboarding is disabled");
       }
 
+      logger.info("onboardSuperAdmin: step 3 create");
       const superAdmin = await this.userRepository.create(superAdminData);
 
+      logger.info("onboardSuperAdmin: step 4 generateToken");
       const token = this.generateToken(superAdmin);
 
       logger.info(`Super admin onboarded successfully: ${superAdmin.username}`);

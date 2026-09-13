@@ -44,7 +44,7 @@ class IngestService{
     }
 
     ingestApiHit = async (hitData) => {
-        try {
+
             this.validateHitData(hitData)
             const { serviceName, endpoint, method, statusCode, latencyMs, clientId, apiKeyId, ip = null, userAgent = '' } = hitData
 
@@ -77,9 +77,6 @@ class IngestService{
                 timestamp: eventPayload.timestamp,
                 
             }
-        } catch (error) {
-            throw error
-        }
     }
 }
 

@@ -2,7 +2,7 @@ import express from 'express'
 import rateLimit from 'express-rate-limit'
 import config from '../../../shared/config/index.js';
 import validateApiKey from '../../../middlewares/validateApiKey.js';
-import ingestContainer from '../Dependencies/Dependencies.js';
+import ingestContainer from '../dependencies/Dependencies.js';
 
 
 const ingestRouter = express.Router()

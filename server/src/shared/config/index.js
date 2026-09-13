@@ -20,7 +20,7 @@ const config = {
     },
 
     rabbitmq: {
-        uri: process.env.RABBITMQ_URI || 'amqp://localhost:15672',
+        uri: process.env.RABBITMQ_URI || 'amqp://localhost:5672',
         queue: process.env.RABBITMQ_QUEUE || 'api_monitoring_queue',
         publisherConfirm: process.env.RABBITMQ_PUBLISHER_CONFIRM === 'true' || false,
         retryAttempts: parseInt(process.env.RABBITMQ_RETRY_ATTEMPTS || '5', 10),

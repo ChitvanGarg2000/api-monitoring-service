@@ -17,6 +17,21 @@ export default class ClientController{
      * @param {*} next 
      * @returns {}
      */
+    listClients = async (req, res, next) => {
+        try {
+            const isSuperAdmin = await this.authService.checkSuperAdminPermissions(req.user.userId);
+            if (!isSuperAdmin) {
+                return res.status(403).json(ResponseFormatter.error('Only super admin can list clients', 403));
+            }
+
+            const clients = await this.clientService.listClients();
+            return res.status(200).json(ResponseFormatter.success(clients, 'Clients fetched successfully'));
+        } catch (error) {
+            logger.error(`error listing clients ${error.message}`);
+            next(error);
+        }
+    };
+
     createClient = async (req, res, next) => {
         try {
             console.log(req.user, "<<<< user >>>")

@@ -90,10 +90,23 @@ const startServer = async () => {
     try {
         await initializeConnections();
 
-        const server = app.listen(config.port, () => {
+        const server = app.listen(config.port, '0.0.0.0', () => {
             logger.info(`Server running on port ${config.port}`)
             logger.info(`Environment: ${config.node_env}`)
             logger.info(`Application running at: http://localhost:${config.port}`)
+        })
+
+        server.on('error', (error) => {
+            if (error.code === 'EADDRINUSE') {
+                logger.error(
+                    `Port ${config.port} is already in use. ` +
+                    `Stop the Docker api-app container (docker compose stop api-app) ` +
+                    `or change PORT in server/.env to another port (e.g. 8081).`,
+                )
+            } else {
+                logger.error('Server failed to start:', error)
+            }
+            process.exit(1)
         })
 
         const handleGracefulShutdown = async (signal) => {

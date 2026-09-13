@@ -8,6 +8,7 @@ const { clientController } = clientContainer.controllers
 
 clientRouter.use(autheticate)
 
+clientRouter.get('/', clientController.listClients)
 clientRouter.post('/onboard', clientController.createClient)
 clientRouter.post('/:clientId/users', clientController.createClientUsers)
 clientRouter.post('/:clientId/api-keys', clientController.createApiKeys)

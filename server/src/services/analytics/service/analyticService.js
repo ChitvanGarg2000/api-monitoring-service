@@ -1,5 +1,5 @@
 import logger from '../../../shared/config/logger.js';
-import AppError from '../../../shared/utils/appError.js';
+import AppError from '../../../shared/utils/AppError.js';
 
 export class AnalyticService {
     constructor(metricRepository) {
@@ -38,7 +38,6 @@ export class AnalyticService {
             const errorRate = totalHits > 0 ? (totalErrors / totalHits) * 100 : 0;
             return {
                 totalHits,
-                errorRate,
                 successRate: totalHits - totalErrors,
                 errorRate: parseFloat(errorRate.toFixed(2)),
                 avgLatency: parseFloat(stats.avg_latency) || 0,
@@ -61,7 +60,7 @@ export class AnalyticService {
             const { limit = 10, startTime } = options;
             const parsedStartTime = startTime ? new Date(startTime) : null;
 
-            const endpoints = await this.metricsRepository.getTopEndpoints(clientId, limit, parsedStartTime)
+            const endpoints = await this.metricRepository.getTopEndpoints(clientId, limit, parsedStartTime)
 
             return endpoints.map((endpoint) => ({
                 serviceName: endpoint.service_name,
@@ -86,7 +85,7 @@ export class AnalyticService {
 
             const { endTime: end_time, startTime: start_time } = this.parseTimeFilters({ startTime, endTime });
 
-            const metrics = await this.metricsRepository.getMetrics({ clientId, serviceName, endpoint, startTime: start_time, endTime: end_time, limit })
+            const metrics = await this.metricRepository.getMetrics({ clientId, serviceName, endpoint, startTime: start_time, endTime: end_time, limit })
 
             return metrics.map((metric) => ({
                 serviceName: metric.service_name,

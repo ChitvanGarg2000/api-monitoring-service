@@ -1,29 +1,25 @@
-import clientRepository from '../../client/repository/ClientRepository.js';
+import clientContainer from '../../client/Dependencies/dependencies.js';
 import processorContainer from '../../processor/Dependencies/dependency.js';
 import authContainer from '../../auth/Dependencies/dependencies.js';
-import { AnalyticsService } from '../service/analyticsService.js';
-import { AnalyticsController } from '../controller/analyticController.js';
+import { AnalyticService } from '../service/analyticService.js';
+import { AnalyticController } from '../controller/analyticController.js';
 
-/**
- * Container initializer for the Analytics module.
- * Provides consistent access to repositories, services, and controllers.
- */
 class Container {
     static init() {
         const repositories = {
-            clientRepository,
+            clientRepository: clientContainer.repositories.clientRepository,
             metricsRepository: processorContainer.repositories.metricsRepository,
         };
 
-        const analyticsService = new AnalyticsService(repositories.metricsRepository);
+        const analyticService = new AnalyticService(repositories.metricsRepository);
 
         const services = {
-            analyticsService,
-            authService: authContainer.services && authContainer.services.authService,
+            analyticService,
+            authService: authContainer.services?.authService,
         };
 
-        const analyticsController = new AnalyticsController({
-            analyticsService: services.analyticsService,
+        const analyticsController = new AnalyticController({
+            analyticService: services.analyticService,
             authService: services.authService,
             clientRepository: repositories.clientRepository,
         });

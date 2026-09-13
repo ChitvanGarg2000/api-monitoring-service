@@ -1,5 +1,5 @@
-import IngestService from "../services/ingestService.js";
 import ResponseFormatter from "../../../shared/utils/responseFormatter.js";
+import logger from "../../../shared/config/logger.js";
 
 class IngestController{
     constructor(ingestService){

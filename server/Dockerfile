@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 WORKDIR /app
 
@@ -12,4 +12,4 @@ RUN mkdir -p shared/logs
 
 EXPOSE 8000
 
-CMD ["node", "./src/server.js"]
+CMD ["node", "--import", "./src/shared/polyfills/crypto.js", "./src/server.js"]

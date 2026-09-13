@@ -2,7 +2,6 @@ import logger from "../shared/config/logger.js";
 import mongodb from "../shared/config/mongo.js";
 import postgres from "../shared/config/postgres.js";
 import rabbitmq from "../shared/config/rabbitmq.js";
-import config from "../shared/config/index.js";
 
 const initializeConnections = async () => {
     try {

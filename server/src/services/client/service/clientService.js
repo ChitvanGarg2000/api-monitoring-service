@@ -5,7 +5,7 @@ import {
 } from "../../../shared/constants/role.js";
 import AppError from "../../../shared/utils/AppError.js";
 import { v4 as uuidv4 } from "uuid";
-import crypto from "crypto";
+import crypto from "node:crypto";
 
 export default class ClientService {
   constructor(clientRepository, apiKeyRepository, userRepository) {
@@ -77,6 +77,16 @@ export default class ClientService {
       500,
     );
   }
+
+  listClients = async () => {
+    try {
+      const clients = await this.clientRepository.findAll({}, { limit: 100 });
+      return clients.map((client) => this.formatClientForResponse(client));
+    } catch (error) {
+      logger.error("Error listing clients", error.message);
+      throw error;
+    }
+  };
 
   createClient = async (clientData, adminUser) => {
     try {
@@ -223,7 +233,7 @@ export default class ClientService {
       const apiKeys = await this.apiKeyRepository.findByClientId(clientId);
 
       if (!apiKeys || apiKeys.length === 0) {
-        throw new AppError("client does not have any api keys", 404);
+        return [];
       }
 
       const result = apiKeys.map((apiKey) => {
@@ -233,7 +243,7 @@ export default class ClientService {
       });
 
       return result;
-    } catch {
+    } catch(error) {
       logger.error("Error gettting api keys", error.message);
       throw error;
     }

@@ -1,4 +1,4 @@
-import { BaseRepository } from "./BaseRepository";
+import { BaseRepository } from "./BaseRepository.js";
 
 const MAX_LIMIT=1000
 const QUERY_TIMEOUT_MS=30000    
@@ -94,52 +94,50 @@ export class MetricsRepository extends BaseRepository{
                 endpoint,
                 method,
                 SUM(total_hits) as total_hits,
-                SUM(avg_latency * total_hits)/ NULLIF(SUM(total_hits), 0) as avg_latency_ms,
+                SUM(avg_latency_ms * total_hits) / NULLIF(SUM(total_hits), 0) as avg_latency,
                 MIN(min_latency_ms) as min_latency,
                 MAX(max_latency_ms) as max_latency,
                 time_bucket
-            FROM endpoint_metrics
-            `
+            FROM endpoint_metrics`
 
             const params = []
-            let paramIndex = -1
-            
+            let paramIndex = 1
             const whereConditions = []
 
-            if(clientId !== null){
+            if (clientId != null) {
                 whereConditions.push(`client_id = $${paramIndex++}`)
                 params.push(clientId)
             }
 
-            if(serviceName !== null){
+            if (serviceName != null) {
                 whereConditions.push(`service_name = $${paramIndex++}`)
                 params.push(serviceName)
             }
 
-            if(endpoint !== null){
+            if (endpoint != null) {
                 whereConditions.push(`endpoint = $${paramIndex++}`)
                 params.push(endpoint)
             }
 
-            if(startTime !== null){
+            if (startTime != null) {
                 whereConditions.push(`time_bucket >= $${paramIndex++}`)
                 params.push(startTime)
             }
 
-            if(endTime !== null){
+            if (endTime != null) {
                 whereConditions.push(`time_bucket <= $${paramIndex++}`)
                 params.push(endTime)
             }
 
-            if(whereConditions.length > 0){
-                query += `WHERE ${whereConditions.join(' AND ')}`
+            if (whereConditions.length > 0) {
+                query += ` WHERE ${whereConditions.join(' AND ')}`
             }
 
             query += `
                 GROUP BY service_name, endpoint, method, time_bucket
                 ORDER BY time_bucket DESC, service_name, endpoint
-                LIMIT $${paramIndex}
-                OFFSET $${paramIndex+1}
+                LIMIT $${paramIndex++}
+                OFFSET $${paramIndex++}
             `
 
             params.push(safe_limit, safe_offset)
@@ -163,33 +161,37 @@ export class MetricsRepository extends BaseRepository{
                 endpoint,
                 method,
                 SUM(total_hits) as total_hits,
-                SUM(avg_latency * total_hits)/ NULLIF(SUM(total_hits), 0) as avg_latency_ms,
-                SUM(error_hits) as error_hits,
-            FROM endpoint_metrics
-            `
+                SUM(avg_latency_ms * total_hits) / NULLIF(SUM(total_hits), 0) as avg_latency,
+                SUM(error_hits) as error_hits
+            FROM endpoint_metrics`
 
             const params = []
             let paramIndex = 1
+            const whereConditions = []
 
-            if(clientId !== null){
-                query += `WHERE client_id = $${paramIndex++}`
+            if (clientId != null) {
+                whereConditions.push(`client_id = $${paramIndex++}`)
                 params.push(clientId)
             }
 
-            if(startTime !== null){
-                query += `AND time_bucket >= $${paramIndex++}`
+            if (startTime != null) {
+                whereConditions.push(`time_bucket >= $${paramIndex++}`)
                 params.push(startTime)
+            }
+
+            if (whereConditions.length > 0) {
+                query += ` WHERE ${whereConditions.join(' AND ')}`
             }
 
             query += `
                 GROUP BY service_name, endpoint, method
-                ORDER BY time_bucket DESC
-                LIMIT $${paramIndex}
+                ORDER BY total_hits DESC
+                LIMIT $${paramIndex++}
             `
 
             params.push(safe_limit)
 
-            const {rows} = await this._query(query, params)
+            const { rows } = await this._query(query, params)
 
             this.logger.info(`MetricsRepository: Fetched ${rows.length} top endpoints`)
             return rows
@@ -205,39 +207,44 @@ export class MetricsRepository extends BaseRepository{
             let paramIndex = 1
 
             let query = `SELECT
-                SUM(total_hits) as total_hits,
-                SUM(avg_latency * total_hits)/ NULLIF(SUM(total_hits), 0) as avg_latency_ms,
-                SUM(error_hits) as error_hits,
-            FROM endpoint_metrics
-            `
+                COALESCE(SUM(total_hits), 0) as total_hits,
+                COALESCE(SUM(avg_latency_ms * total_hits) / NULLIF(SUM(total_hits), 0), 0) as avg_latency,
+                COALESCE(SUM(error_hits), 0) as error_hits,
+                COUNT(DISTINCT service_name) as unique_services,
+                COUNT(DISTINCT endpoint) as unique_endpoints
+            FROM endpoint_metrics`
 
-            if(clientId !== null){
-                query += `WHERE client_id = $${paramIndex++}`
+            const whereConditions = []
+
+            if (clientId != null) {
+                whereConditions.push(`client_id = $${paramIndex++}`)
                 params.push(clientId)
             }
 
-            if(startTime !== null){
-                query += `AND time_bucket >= $${paramIndex++}`
+            if (startTime != null) {
+                whereConditions.push(`time_bucket >= $${paramIndex++}`)
                 params.push(startTime)
             }
 
-            if(endTime !== null){
-                query += `AND time_bucket <= $${paramIndex++}`
+            if (endTime != null) {
+                whereConditions.push(`time_bucket <= $${paramIndex++}`)
                 params.push(endTime)
             }
 
-            query += `
-                GROUP BY client_id
-                ORDER BY time_bucket DESC
-                LIMIT $${paramIndex}
-            `
+            if (whereConditions.length > 0) {
+                query += ` WHERE ${whereConditions.join(' AND ')}`
+            }
 
-            params.push(safe_limit)
+            const { rows } = await this._query(query, params)
 
-            const {rows} = await this._query(query, params)
-
-            this.logger.info(`MetricsRepository: Fetched overall stats`)
-            return rows
+            this.logger.info('MetricsRepository: Fetched overall stats')
+            return rows[0] ?? {
+                total_hits: 0,
+                avg_latency: 0,
+                error_hits: 0,
+                unique_services: 0,
+                unique_endpoints: 0,
+            }
         } catch (error) {
             this.logger.error(`MetricsRepository: getOverallStats failed - ${error.message}`)
             throw error

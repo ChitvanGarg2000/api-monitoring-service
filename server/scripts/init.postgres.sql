@@ -1,18 +1,18 @@
-create table if not exists endpoint_metrics(
-    id serial primary key,
-    client_id varchar(24) not null,
-    service_name varchar(255) not null,
-    endpoint varchar(500) not null,
-    method varchar(10) not null,
-    total_hits integer default 0,
-    error_hits integer default 0,
-    average_latency numeric(10, 3) default 0.000,
-    max_latency numeric(10, 3) default 0.000,
-    min_latency numeric(10, 3) default 0.000,
-    created_at timestamp default now(),
-    updated_at timestamp default now(),
-
-    unique(client_id, service_name, endpoint, method, time_bucket)
+CREATE TABLE IF NOT EXISTS endpoint_metrics (
+    id SERIAL PRIMARY KEY,
+    client_id VARCHAR(24) NOT NULL,
+    service_name VARCHAR(255) NOT NULL,
+    endpoint VARCHAR(500) NOT NULL,
+    method VARCHAR(10) NOT NULL,
+    total_hits INTEGER DEFAULT 0,
+    error_hits INTEGER DEFAULT 0,
+    avg_latency_ms NUMERIC(10, 3) DEFAULT 0.000,
+    min_latency_ms NUMERIC(10, 3) DEFAULT 0.000,
+    max_latency_ms NUMERIC(10, 3) DEFAULT 0.000,
+    time_bucket TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (client_id, service_name, endpoint, method, time_bucket)
 );
 
 CREATE INDEX IF NOT EXISTS idx_endpoint_metrics_client_id ON endpoint_metrics(client_id);
@@ -26,7 +26,10 @@ BEGIN
     NEW.updated_at = CURRENT_TIMESTAMP;
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS update_endpoint_metrics_updated_at ON endpoint_metrics;
-CREATE TRIGGER update_endpoint_metrics_updated_at BEFORE UPDATE ON endpoint_metrics FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_endpoint_metrics_updated_at
+    BEFORE UPDATE ON endpoint_metrics
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();

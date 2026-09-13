@@ -59,7 +59,12 @@ class MongoUserRepository extends BaseRepository{
     }
 
     async findAll(){
-        return await this.model.find({isActive: true}).select('-password')
+        try {
+            return await this.model.find({ isActive: true }).select('-password')
+        } catch (error) {
+            logger.error(`findAll failed: ${error.message}\n${error.stack}`)
+            throw error
+        }
     }
 }
 

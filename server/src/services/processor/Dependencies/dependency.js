@@ -1,4 +1,4 @@
-import { ApiHitRepository } from "../repository/ApiHitsRepository.js";
+import { ApiHitsRepository } from "../repository/ApiHitsRepository.js";
 import { MetricsRepository } from "../repository/MetricsRepository.js";
 import { ProcessorService } from "../service/ProcessorService.js";
 
@@ -9,12 +9,12 @@ import logger from '../../../shared/config/logger.js';
 class Container {
     static init() {
         const repositories = {
-            apiHitRepository: new ApiHitRepository({ model: ApiHit, logger }),
+            apiHitsRepository: new ApiHitsRepository({ model: ApiHit, logger }),
             metricsRepository: new MetricsRepository({ logger, postgres }),
         };
 
         const services = {
-            processorService: new ProcessorService(repositories),
+            processorService: new ProcessorService({...repositories}),
         };
 
         return { repositories, services }
